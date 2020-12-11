@@ -1,0 +1,120 @@
+﻿<UserControl x:Class="Dashboard1.viewModel.TreeViewControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:local="clr-namespace:Dashboard1"
+             mc:Ignorable="d" Loaded="UserControl_Loaded" >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <CollectionViewSource x:Key="testViewSource"/>
+            <CollectionViewSource x:Key="menuViewSource"/>
+            <ContextMenu x:Key="ContextMenu">
+                <MenuItem  Header="添加新任务" Click="MenuAddTask_Click" />
+                <Separator></Separator>
+                <MenuItem  Header="添加子项" Click="MenuAddProject_Click" />
+                <Separator></Separator>
+                <MenuItem x:Name="MenuCopyItem" Header="复制" Command="Copy" InputGestureText="Ctrl+C"/>
+                <MenuItem x:Name="MenuPasteItem" Header="粘贴" Command="Paste" InputGestureText="Ctrl+V"/>
+                <MenuItem x:Name="MenuDeleteItem" Header="删除" Command="Delete" InputGestureText="Delete"/>
+                <Separator></Separator>
+                <MenuItem Name="reName" Header="重命名" Click="MenuReName_Click"/>
+                <Separator></Separator>
+                <MenuItem Name="p" Header="属性"/>
+            </ContextMenu>
+            <ContextMenu x:Key="ContextMenu1">
+                <MenuItem  Header="复制" Command="Copy" InputGestureText="Ctrl+C"/>
+                <MenuItem  Header="粘贴" Command="Paste" InputGestureText="Ctrl+V"/>
+                <MenuItem  Header="删除" Command="Delete" InputGestureText="Delete"/>
+                <Separator></Separator>
+                <MenuItem Header="删除任务" Command="Delete"/>
+                <Separator></Separator>
+                <MenuItem Header="重命名" Click="MenuReName_Click"/>
+                <Separator></Separator>
+                <MenuItem Header="属性"/>
+            </ContextMenu>
+            <ContextMenu x:Key="ContractContextMenu" ItemsSource="{Binding Source={StaticResource menuViewSource}, Path=MenuItems}"  MenuItem.Click="ContextMenu_Click">
+                <ContextMenu.ItemTemplate>
+                    <DataTemplate DataType="{x:Type MenuItem}">
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ContextMenu.ItemTemplate>
+            </ContextMenu>
+            <materialDesign:PopupBox x:Key="ContextMenu111"
+      DockPanel.Dock="Right"
+      PlacementMode="BottomAndAlignRightEdges">
+                <ListBox>
+                    <ListBoxItem>
+                        Hello World
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        Nice Popup
+                    </ListBoxItem>
+                    <ListBoxItem>
+                        Goodbye.
+                    </ListBoxItem>
+                </ListBox>
+            </materialDesign:PopupBox>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.CommandBindings>
+        <CommandBinding x:Name="Command_Copy" Command="Copy" CanExecute="Command_Copy_CanExecute" Executed="Command_Copy_Executed" />
+        <CommandBinding x:Name="Command_Paste" Command="Paste" CanExecute="Command_Paste_CanExecute" Executed="Command_Paste_Executed" />
+        <CommandBinding x:Name="Command_Delete" Command="Delete" CanExecute="Command_Delete_CanExecute" Executed="Command_Delete_Executed" />
+    </UserControl.CommandBindings>
+    <Grid Margin="0 0 1 0 ">
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="LightGray" Offset="1"/>
+                <GradientStop Color="#FFE6E6E6"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.Effect>
+            <DropShadowEffect BlurRadius="20" Color="#FFDEDEDE" RenderingBias="Quality" ShadowDepth="1"/>
+        </Grid.Effect>
+
+        <Grid Background="#FF6E6E75">
+            <TextBlock Text="设备列表" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Microsoft YaHei" Foreground="#FF43434B" FontSize="16"/>
+        </Grid>
+
+        <TreeView 
+  MinWidth="220" Grid.Row="1" Background="#FF81818A"
+            ItemsSource="{Binding  Source={StaticResource testViewSource}}" x:Name="departmentTree" SelectedItemChanged="departmentTree_SelectedItemChanged" TreeViewItem.Selected="item_SelectedItemChanged" >
+            <!--<TreeView.ItemsPanel >
+                <ItemsPanelTemplate>
+                    <local:MyVirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </TreeView.ItemsPanel>
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem"  BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                    <Setter Property="ItemsPanel">
+                        <Setter.Value>
+                            <ItemsPanelTemplate>
+                                <local:MyVirtualizingStackPanel/>
+                            </ItemsPanelTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </TreeView.ItemContainerStyle>-->
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding ChirdrenTests}">
+                    <StackPanel  Orientation="Horizontal" Margin="0,2,0,2" MouseDown="TreeItem_MouseDown">
+                        <materialDesign:PackIcon Foreground="#FF993636"  Kind="{Binding
+                                            CateId,
+                                            Converter={x:Static local:ImageConverter1.Instance}}"/>
+                        <Grid>
+                            <TextBlock Margin="8,0,0,0"  HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" Text="{Binding Path=Name, Mode=TwoWay}">
+                               </TextBlock>
+                            <TextBox Margin="8,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="14" Text="{Binding Path=Name , Mode=TwoWay}" Visibility="Collapsed" KeyDown="TextBox_KeyDown" LostFocus="renametextbox_LostFous" LostKeyboardFocus="renametextbox_LostFous" LostMouseCapture="renametextbox_LostFous"></TextBox>
+                        </Grid>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </Grid>
+</UserControl>
